@@ -1,0 +1,63 @@
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  min-height: 100%;
+  float: left;
+  width: 100%;
+}
+
+div#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+h3 {
+  margin: 0;
+  padding: 0;
+}
+
+p {
+  margin: 0;
+}
+
+div.video {
+  background-color: black;
+  color: white;
+  min-height: 75vw;
+}
+
+div.touchpads {
+  display: flex;
+  justify-content: space-around;
+  flex-direction: row; 
+}
+
+div.touchpad {
+  min-height: 10em;
+  flex: 1;
+  position: relative;
+}
+
+div.touchpadlabelcontainer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+div.touchpadlabel {
+  display: inline-block;
+  font-size: 40pt;
+}
