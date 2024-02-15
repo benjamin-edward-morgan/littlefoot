@@ -46,7 +46,344 @@ nut_h = 2.27;
 nut_tol = nut_h + xy_tol + wall_t;
 
 
-//echo(nut_r);
+
+std_srvo_body_w = 20.33;
+std_srvo_body_l = 40.78;
+std_srvo_body_h = 38.04;
+std_srvo_bracket_l = 55;
+std_srvo_bracket_h = 2.9;
+std_srvo_hole_a = 10.0;
+std_srvo_hole_b = 49.5;
+std_srvo_hole_d = 4;
+std_srvo_bracket_z = 7.75;
+std_srvo_shaft_offs = 10;
+std_srvo_keepout_d = 13.5;
+std_srvo_keepout_h = 2.25;
+
+
+
+module std_servo() {
+    color("DimGray")
+    difference() {
+        union() {
+            translate([-std_srvo_shaft_offs, -std_srvo_body_w/2, -std_srvo_body_h])
+            cube(size=[std_srvo_body_l,std_srvo_body_w,std_srvo_body_h]);
+            
+            translate([-std_srvo_shaft_offs - (std_srvo_bracket_l-std_srvo_body_l)/2, -std_srvo_body_w/2, -std_srvo_bracket_h-std_srvo_bracket_z])
+            cube(size=[std_srvo_bracket_l,std_srvo_body_w,std_srvo_bracket_h]);
+            
+            cylinder(r=std_srvo_keepout_d/2, h=std_srvo_keepout_h);
+        }
+        
+        translate([std_srvo_body_l/2 - std_srvo_shaft_offs,0,-std_srvo_bracket_z - 2*std_srvo_bracket_h])
+        for(i=[std_srvo_hole_b/2,-std_srvo_hole_b/2])
+        for(j=[std_srvo_hole_a/2,-std_srvo_hole_a/2])
+        translate([i,j,0])
+        cylinder(r=std_srvo_hole_d/2,h=3*std_srvo_bracket_h,$fn=16);
+    }
+}
+
+std_srvo_flwr_outer_d = 31.6;
+std_srvo_flwr_tip_d = 4.8;
+std_srvo_flwr_cntr_d = 9;
+std_srvo_flwr_t = 2;
+std_srvo_flwr_h = 6;
+std_srvo_flwr_hole_d1 = 27;
+std_srvo_flwr_hole_d2 = 21;
+std_srvo_flwr_hole_d3 = 15;
+std_srvo_flwr_hole_r = 1.75 / 2;
+std_srvo_flwr_shaft_r = 8.4 / 2;
+std_srvo_flwr_shaft_r2 = 5.75 / 2;
+
+
+
+module std_servo_flower() {
+
+    color("Gainsboro")
+    difference() {
+    union() {
+        translate([0,0,std_srvo_flwr_h-std_srvo_flwr_t])
+        linear_extrude(std_srvo_flwr_t) 
+        difference() {
+            union() {
+                for(j=[0,120,240])
+                rotate(j)
+                for(i=[0,180])
+                hull() 
+                {
+                    rotate(i)
+                    translate([std_srvo_flwr_outer_d/2 - std_srvo_flwr_tip_d/2,0,0])
+                        circle(r=std_srvo_flwr_tip_d/2, $fn=16);
+                    circle(r=std_srvo_flwr_cntr_d/2, $fn=32);
+                }
+            }
+            
+            for(j=[0:60:359])
+            rotate(j)
+            for(i=[std_srvo_flwr_hole_d1/2, std_srvo_flwr_hole_d2/2, std_srvo_flwr_hole_d3/2])
+            translate([i,0,0])
+            circle(r=std_srvo_flwr_hole_r , $fn=8);
+        }
+        
+        cylinder(r=std_srvo_flwr_shaft_r,h=std_srvo_flwr_h,$fn=16);
+    }
+    
+    translate([0,0,-std_srvo_flwr_h])
+    cylinder(r=std_srvo_flwr_shaft_r2, h=std_srvo_flwr_h * 3,$fn=16);
+    }
+
+}
+
+
+mro_srvo_body_w = 14;
+mro_srvo_body_l = 29.4;
+mro_srvo_body_h = 28;
+mro_srvo_bracket_l = 39.75;
+mro_srvo_bracket_h = 2.4;
+mro_srvo_hole_a = 35;
+mro_srvo_hole_d = 4;
+mro_srvo_bracket_z = 7.7;
+mro_srvo_shaft_offs = 6;
+mro_srvo_keepout_d = 8.7;
+mro_srvo_keepout_h = 1;
+
+
+module micro_servo() {
+    color("Gray")
+    difference() {
+        union() {
+            translate([-mro_srvo_shaft_offs, -mro_srvo_body_w/2, -mro_srvo_body_h])
+            cube(size=[mro_srvo_body_l,mro_srvo_body_w,mro_srvo_body_h]);
+
+            translate([-mro_srvo_shaft_offs - (mro_srvo_bracket_l-mro_srvo_body_l)/2, -mro_srvo_body_w/2, -mro_srvo_bracket_h-mro_srvo_bracket_z])
+            cube(size=[mro_srvo_bracket_l,mro_srvo_body_w,mro_srvo_bracket_h]);
+
+            cylinder(r=mro_srvo_keepout_d/2, h=mro_srvo_keepout_h);
+        }
+
+
+        translate([mro_srvo_body_l/2 - mro_srvo_shaft_offs,0,-mro_srvo_bracket_z - 2*mro_srvo_bracket_h])
+        for(i=[mro_srvo_hole_a/2,-mro_srvo_hole_a/2])
+        translate([i,0,0])
+        cylinder(r=mro_srvo_hole_d/2,h=3*mro_srvo_bracket_h,$fn=16);
+    }          
+}
+
+mro_srvo_disk_r = 21/2;
+mro_srvo_disk_t = 2;
+mro_srvo_disk_h = 5.6;
+mro_srvo_disk_hole_r = 1.5/2;
+mro_srvo_disk_hole_a = 15;
+mro_srvo_disk_hole_b = 7.5;
+mro_srvo_disk_center_r = 9/2;
+mro_srvo_disk_center_hole_r = 2;
+
+
+module micro_servo_disk() {
+
+    color("silver")
+    difference() {
+        union() {
+            translate([0,0,mro_srvo_disk_h-mro_srvo_disk_t])
+            linear_extrude(mro_srvo_disk_t)
+            difference() {
+                circle(r=mro_srvo_disk_r, $fn = 16);
+
+                for(j=[0,90,180,270])
+                for(i=[-mro_srvo_disk_hole_b/2,0,mro_srvo_disk_hole_b/2])
+                rotate(j)
+                translate([mro_srvo_disk_hole_a/2, i])
+                circle(r=mro_srvo_disk_hole_r, $fn=8);
+            }
+            
+            cylinder(r=mro_srvo_disk_center_r,h=mro_srvo_disk_h,$fn=16);
+        }
+        
+        translate([0,0,-mro_srvo_disk_h])
+        cylinder(r=mro_srvo_disk_center_hole_r,h=mro_srvo_disk_h*3,$fn=16);
+    }
+
+}
+
+rpi_cam_2_board_w = 25;
+rpi_cam_2_board_h = 23.862;
+rpi_cam_2_board_t = 1;
+rpi_cam_2_board_corner_r = 2.0;
+rpi_cam_2_board_hole_r = 1.1;
+rpi_cam_2_board_hole_a = 2;
+rpi_cam_2_board_hole_b = 2;
+rpi_cam_2_board_hole_c = 14.5;
+rpi_cam_2_sensor_wl = 8.5;
+rpi_cam_2_sensor_h = 5.75;
+rpi_cam_2_bottom_sensor_offs = 9.462;
+rpi_cam_2_connector_w = 22;
+rpi_cam_2_connector_h = 5.6;
+rpi_cam_2_connector_t = 2.75;
+
+
+
+module rpi_cam_2() {
+    
+    color("OliveDrab")
+    linear_extrude(rpi_cam_2_board_t)
+    difference() {
+        hull() {
+            for(i=[rpi_cam_2_board_w/2 - rpi_cam_2_board_corner_r, -rpi_cam_2_board_w/2 + rpi_cam_2_board_corner_r])
+            for(j=[- rpi_cam_2_board_corner_r, -rpi_cam_2_board_h + rpi_cam_2_board_corner_r])
+            translate([i,j,0])
+            circle(r=rpi_cam_2_board_corner_r, $fn=16);
+        }
+    
+        for(i=[rpi_cam_2_board_w/2 - rpi_cam_2_board_hole_a, -rpi_cam_2_board_w/2 + rpi_cam_2_board_hole_a])
+        for(j=[-rpi_cam_2_board_hole_b, -rpi_cam_2_board_hole_c])
+        translate([i,j,0])
+        circle(r=rpi_cam_2_board_hole_r, $fn=16);
+    }
+    
+    color("DarkSlateGray")
+    translate([-rpi_cam_2_sensor_wl/2,-rpi_cam_2_sensor_wl/2 - rpi_cam_2_board_h + rpi_cam_2_bottom_sensor_offs ,rpi_cam_2_board_t])
+    cube(size=[rpi_cam_2_sensor_wl,rpi_cam_2_sensor_wl,rpi_cam_2_sensor_h]);
+
+    color("LightSlateGray") 
+    translate([-rpi_cam_2_connector_w/2,-rpi_cam_2_board_h,-rpi_cam_2_connector_t])
+    cube([rpi_cam_2_connector_w,rpi_cam_2_connector_h,rpi_cam_2_connector_t]);
+}
+
+
+pt_srvo_displacement = [0,-15,45];
+pt_srvo_rotation = [90,90,0];
+
+cam_displacement = [20,12,pt_srvo_displacement[1]];
+cam_rotation = [0,-90,-90];
+
+
+cam_brck_corner_r = 2;
+cam_brck_t = 2;
+cam_brck_h = mro_srvo_body_h + xy_tol + cam_brck_t;
+cam_brck_pad_d = 5;
+
+cam_brck_nbbn_r1 = 5;
+cam_brck_nbbn_r2 = 0.5;
+cam_brck_nbbn_h = 4;
+
+
+camera_bracket();
+
+module camera_bracket() {
+
+color("purple")
+    union() {
+    difference() {
+    translate([0,0,-cam_brck_h])
+    linear_extrude(cam_brck_h)
+    translate([-mro_srvo_shaft_offs - (mro_srvo_bracket_l - mro_srvo_body_l) / 2 + cam_brck_corner_r,-mro_srvo_body_w/2 + cam_brck_corner_r])
+    minkowski() {
+        square(size=[mro_srvo_bracket_l - 2*cam_brck_corner_r, mro_srvo_body_w  - 2*cam_brck_corner_r + cam_brck_t] );
+        circle(r=cam_brck_corner_r,$fn=4);
+    }
+    
+    translate([-mro_srvo_shaft_offs-xy_tol,-mro_srvo_body_w/2-xy_tol,-mro_srvo_body_h-xy_tol])
+    cube(size=[mro_srvo_body_l+2*xy_tol, mro_srvo_body_w+2*xy_tol, mro_srvo_body_h+2*xy_tol]);
+    
+    translate([-mro_srvo_shaft_offs - (mro_srvo_bracket_l - mro_srvo_body_l) / 2-xy_tol,-mro_srvo_body_w/2 - xy_tol,-mro_srvo_bracket_z-mro_srvo_bracket_h-xy_tol])
+        cube(size=[mro_srvo_bracket_l + 2*xy_tol,mro_srvo_body_w+2*xy_tol,mro_srvo_bracket_h+2*xy_tol + 10]);
+    
+        for(i=[-mro_srvo_hole_a/2,mro_srvo_hole_a/2])
+    translate([i + mro_srvo_body_l/2 - mro_srvo_shaft_offs  ,0, -14.5])
+    nut_negative_2();
+    
+        translate([-15,-10,7-mro_srvo_body_h-2.5])
+    cube([10,15,5]);
+
+    }
+    
+    translate(cam_displacement)
+    rotate(cam_rotation)
+    translate([0,0,-4])
+    linear_extrude(5)
+    difference() {
+        hull() {
+            for(i=[rpi_cam_2_board_w/2, -rpi_cam_2_board_w/2])
+            for(j=[0, -rpi_cam_2_board_h])
+            translate([i,j,0])
+            circle(r=rpi_cam_2_board_corner_r, $fn=16);
+        }
+        
+         hull() {
+            for(i=[rpi_cam_2_board_w/2 - rpi_cam_2_board_corner_r, -rpi_cam_2_board_w/2 + rpi_cam_2_board_corner_r])
+            for(j=[- rpi_cam_2_board_corner_r, -rpi_cam_2_board_h + rpi_cam_2_board_corner_r - 10])
+            translate([i,j,0])
+            circle(r=rpi_cam_2_board_corner_r + xy_tol, $fn=16);
+        }
+    }
+    
+    translate(cam_displacement)
+    rotate(cam_rotation)  
+    translate([0,0,-4])
+    linear_extrude(4) 
+    difference() {
+    union() {
+        for(i=[rpi_cam_2_board_w/2 - rpi_cam_2_board_hole_a, -rpi_cam_2_board_w/2 + rpi_cam_2_board_hole_a])
+        for(j=[-rpi_cam_2_board_hole_b, -rpi_cam_2_board_hole_c])
+        translate([i,j,0])
+        circle(r=cam_brck_pad_d/2, $fn=16);
+    }
+    for(i=[rpi_cam_2_board_w/2 - rpi_cam_2_board_hole_a, -rpi_cam_2_board_w/2 + rpi_cam_2_board_hole_a])
+        for(j=[-rpi_cam_2_board_hole_b, -rpi_cam_2_board_hole_c])
+        translate([i,j,0])
+        circle(r=rpi_cam_2_board_hole_r, $fn=16);
+    }
+
+    translate([0,0,-mro_srvo_body_h-cam_brck_nbbn_h-cam_brck_t-0.1])
+    cylinder(r1=cam_brck_nbbn_r2, r2=cam_brck_nbbn_r1+0.1, h=cam_brck_nbbn_h, $fn=64);
+    }
+
+}
+
+module nut_negative_2() {
+
+    translate([-xy_tol-nut_w/2,-nut_r-xy_tol,-xy_tol])
+    cube([nut_w+2*xy_tol, nut_r*2+2*xy_tol, nut_h+2*xy_tol]);
+
+    translate([0,0,1])
+    rotate(22.5)
+    cylinder(r=(bolt_d/2+xy_tol)/cos(22.5), h=19, center=true, $fn=8);
+    
+}
+
+
+//pt_assembly(tilt = 0);
+module pt_assembly(tilt = 0) {
+
+
+std_servo();
+
+translate([0,0,std_srvo_keepout_h])
+std_servo_flower();
+
+translate(pt_srvo_displacement)
+rotate(pt_srvo_rotation) 
+{
+
+    translate([0,0,mro_srvo_keepout_h])
+    micro_servo_disk();
+
+    rotate(tilt) {    
+        micro_servo();
+        
+        camera_bracket();
+
+        translate(cam_displacement)
+        rotate(cam_rotation)
+        rpi_cam_2();
+    }
+
+}
+
+
+
+}
+
 
 
 //assembly();
@@ -69,6 +406,10 @@ module assembly() {
     body();
     
 }
+
+
+
+
 
 
 
@@ -252,7 +593,7 @@ module board() {
 }
 
 
-power_board_bottom();
+//power_board_bottom();
 module power_board_bottom() {
     
     difference() {
