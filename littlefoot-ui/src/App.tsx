@@ -1,5 +1,6 @@
-import TouchPad, { TouchPadState } from "./touchpad/TouchPad";
-import useIocWebsocketClient from './ioc/IocWebsocketClient';
+import TouchPad, { TouchPadState } from "./controls/TouchPad";
+import Slider from "./controls/Slider";
+import useIocWebsocketClient, { IocFloatInput } from './ioc/IocWebsocketClient';
 import { useCallback, useState } from "react";
 
 
@@ -62,16 +63,53 @@ export default function App() {
 
   }, [ioc, setter]);
 
+  const headlights_input: IocFloatInput | null = ioc.inputs["headlights"] && "Float" in ioc.inputs["headlights"] ? ioc.inputs["headlights"].Float : null;
+
+  const headlights_callback = useCallback( (value: number) => { 
+    if(headlights_input && headlights_input.value != value) {
+      setter([{
+        k: "headlights",
+        v: value
+      }]);
+    }
+
+  }, [headlights_input, setter])
+
+  const taillights_input: IocFloatInput | null = ioc.inputs["taillights"] && "Float" in ioc.inputs["taillights"] ? ioc.inputs["taillights"].Float : null;
+
+  const taillights_callback = useCallback( (value: number) => {
+    if(taillights_input && taillights_input.value != value) {
+      setter([{
+        k: "taillights",
+        v: value
+      }]);
+    }
+  }, [taillights_input, setter])
+
+
   return (
     <>
     <h3>littlefoot</h3>
 
-    {/* <div className="video"> */}
-      <img src={streamImageUrl} className="stream"/>
-    {/* </div> */}
+    <div className="video">
+      <img src={streamImageUrl} className="stream" />
+    </div>
     <div className="touchpads">
       <TouchPad label="🛞" bg="white" callback={driveSteerCallback}/>
       <TouchPad label="🧿" bg="white" callback={panTiltCallback}/>
+    </div>
+    <div className="controls">
+      { 
+        headlights_input ? 
+        <Slider label = "Headlights" input = {headlights_input} callback={headlights_callback} /> : 
+        <></>
+      }
+      {
+        taillights_input ? 
+        <Slider label = "Taillights" input = {taillights_input} callback={taillights_callback} /> :
+        <></>
+      }
+      
     </div>
    
     </>
