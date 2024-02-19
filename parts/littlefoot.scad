@@ -145,7 +145,7 @@ mro_srvo_hole_d = 4;
 mro_srvo_bracket_z = 7.7;
 mro_srvo_shaft_offs = 6;
 mro_srvo_keepout_d = 8.7;
-mro_srvo_keepout_h = 1;
+mro_srvo_keepout_h = 3;
 
 
 module micro_servo() {
@@ -174,7 +174,7 @@ mro_srvo_disk_t = 2;
 mro_srvo_disk_h = 5.6;
 mro_srvo_disk_hole_r = 1.5/2;
 mro_srvo_disk_hole_a = 15;
-mro_srvo_disk_hole_b = 7.5;
+mro_srvo_disk_hole_b = 7;
 mro_srvo_disk_center_r = 9/2;
 mro_srvo_disk_center_hole_r = 2;
 
@@ -267,7 +267,7 @@ cam_brck_nbbn_r2 = 0.5;
 cam_brck_nbbn_h = 4;
 
 
-camera_bracket();
+//camera_bracket();
 
 module camera_bracket() {
 
@@ -351,8 +351,126 @@ module nut_negative_2() {
     
 }
 
+pt_bracket_r1 = 29;
+pt_bracket_w1 = 50;
+pt_bracket_dz = 50;
+pt_bracket_w2 = 33;
+pt_bracket_base_t = 7;
+pt_bracket_base_zposn = -5;
+pt_bracket_mk_r = 1;
 
-//pt_assembly(tilt = 0);
+//pan_tilt_bracket();
+module pan_tilt_bracket() {
+
+    color("RebeccaPurple")
+    difference() {
+        minkowski() 
+        {
+            translate([0,0,pt_bracket_mk_r])
+            difference() 
+            {
+                rotate(45/2)
+                hull() {
+                    linear_extrude(1)
+                    circle(r=pt_bracket_r1-pt_bracket_mk_r,$fn=8);
+
+                    translate([0,0,pt_bracket_dz])
+                    cylinder(r1=pt_bracket_r1-pt_bracket_mk_r, r2=(pt_bracket_r1-pt_bracket_mk_r)*sqrt(2)/2, h=(pt_bracket_r1-pt_bracket_mk_r)/2, $fn=8);
+                    
+                }
+
+                translate([-pt_bracket_w1,-pt_bracket_w2/2-pt_bracket_mk_r-0.9,pt_bracket_base_t-2*pt_bracket_mk_r])
+                cube([2*pt_bracket_w1,pt_bracket_w2+2*pt_bracket_mk_r,pt_bracket_dz+pt_bracket_r1+2]);
+            }
+            
+            sphere(r=pt_bracket_mk_r,$fn=8);
+        }
+        
+        
+        //flower shape
+        translate([0,0,2.8])
+        linear_extrude(pt_bracket_base_t)
+        union() {
+            for(j=[0,120,240])
+            rotate(j)
+            for(i=[0,180])
+            hull() 
+            {
+                rotate(i)
+                translate([std_srvo_flwr_outer_d/2 - std_srvo_flwr_tip_d/2,0,0])
+                    circle(r=std_srvo_flwr_tip_d/2 + xy_tol, $fn=16);
+                circle(r=std_srvo_flwr_cntr_d/2 + 2, $fn=32);
+            }
+        }
+        
+        //flower holes 
+         linear_extrude(pt_bracket_base_t + 0.01)
+        for(j=[0:60:359])
+        rotate(j)
+        for(i=[std_srvo_flwr_hole_d1/2, std_srvo_flwr_hole_d2/2, std_srvo_flwr_hole_d3/2])
+        translate([i,0,0])
+        circle(r=std_srvo_flwr_hole_r + xy_tol , $fn=16);
+        
+        //shaft 
+        translate([0,0,-0.01])
+        cylinder(r=std_srvo_flwr_shaft_r+xy_tol+1, h=pt_bracket_base_t + 0.01,$fn=32);
+        
+        //nubbin slot 
+        translate(-[0,0,std_srvo_keepout_h  +  std_srvo_flwr_h + pt_bracket_base_zposn])
+        translate(pt_srvo_displacement)
+        rotate(pt_srvo_rotation) 
+        hull() {
+            translate([0,0,-mro_srvo_body_h-cam_brck_nbbn_h-cam_brck_t-0.1-xy_tol])
+            cylinder(r1=cam_brck_nbbn_r2, r2=cam_brck_nbbn_r1+xy_tol+0.1, h=cam_brck_nbbn_h+xy_tol, $fn=64);
+            
+            translate([-pt_bracket_dz,0,-mro_srvo_body_h-cam_brck_nbbn_h-cam_brck_t-xy_tol-0.1])
+            cylinder(r1=cam_brck_nbbn_r2, r2=cam_brck_nbbn_r1+xy_tol+0.1, h=cam_brck_nbbn_h+xy_tol, $fn=64);
+        }
+        
+        //micro servo disk slot
+        translate(-[0,0,std_srvo_keepout_h  +  std_srvo_flwr_h + pt_bracket_base_zposn])
+        translate(pt_srvo_displacement)
+        rotate(pt_srvo_rotation) 
+        {
+            hull()
+            for(i=[0,-pt_bracket_dz])
+            translate([i,0,-pt_bracket_r1/2])
+            cylinder(r=mro_srvo_disk_center_r+xy_tol,h=pt_bracket_r1,$fn=32);
+            
+            
+            hull()
+            for(i=[0,-pt_bracket_dz])
+            translate([i,0,mro_srvo_keepout_h])
+            translate([0,0,mro_srvo_disk_h-mro_srvo_disk_t-xy_tol])
+            cylinder(r=mro_srvo_disk_r+xy_tol, h=mro_srvo_disk_t+2*xy_tol, $fn = 32);
+        }
+        
+        //micro servo disk holes
+        translate(-[0,0,std_srvo_keepout_h  +  std_srvo_flwr_h + pt_bracket_base_zposn])
+        translate(pt_srvo_displacement)
+        rotate(pt_srvo_rotation) 
+        translate([0,0,-pt_bracket_r1/2])
+        linear_extrude(pt_bracket_r1)
+        for(j=[0,90,180,270])
+        for(i=[-mro_srvo_disk_hole_b/2,0,mro_srvo_disk_hole_b/2])
+        rotate(j)
+        translate([mro_srvo_disk_hole_a/2, i])
+        rotate(45/2)
+        circle(r=mro_srvo_disk_hole_r/cos(45/2) + xy_tol, $fn=8);
+               
+    }
+    
+   
+
+
+    
+}
+
+
+
+
+
+pt_assembly(tilt = -70);
 module pt_assembly(tilt = 0) {
 
 
@@ -361,6 +479,11 @@ std_servo();
 translate([0,0,std_srvo_keepout_h])
 std_servo_flower();
 
+translate([0,0,std_srvo_keepout_h  +  std_srvo_flwr_h + pt_bracket_base_zposn])
+pan_tilt_bracket();
+
+
+
 translate(pt_srvo_displacement)
 rotate(pt_srvo_rotation) 
 {
@@ -368,7 +491,7 @@ rotate(pt_srvo_rotation)
     translate([0,0,mro_srvo_keepout_h])
     micro_servo_disk();
 
-    rotate(tilt) {    
+    rotate(tilt + 90) {    
         micro_servo();
         
         camera_bracket();
@@ -379,6 +502,7 @@ rotate(pt_srvo_rotation)
     }
 
 }
+
 
 
 
@@ -404,6 +528,13 @@ module assembly() {
     electronics_base();
 
     body();
+    
+    translate([95,0,70])
+    pt_assembly(tilt = -70);
+    
+    translate([-125,0,40])
+    rotate([180,0,90])
+    power_board_bottom();
     
 }
 
@@ -447,7 +578,7 @@ difference() {
 //electronics_base();
 module electronics_base() {
     
-    
+color("Magenta")  
 difference() {
     union() {
     difference() {
@@ -592,10 +723,23 @@ module board() {
     
 }
 
+//spacer();
+
+module spacer() {
+    color("fuchsia")
+    linear_extrude(25)
+    difference() {
+        circle(r=bolt_d/2+xy_tol+wall_t,$fn=16);
+        circle(r=bolt_d/2+xy_tol,$fn=16); 
+    }
+}
+
+
+
 
 //power_board_bottom();
 module power_board_bottom() {
-    
+    color("MediumOrchid")
     difference() {
         union() {
             rotate([90,0,0])
@@ -622,17 +766,5 @@ module power_board_bottom() {
     }
     
     
-}
-
-
-//spacer();
-
-module spacer() {
-    color("fuchsia")
-    linear_extrude(25)
-    difference() {
-        circle(r=bolt_d/2+xy_tol+wall_t,$fn=16);
-        circle(r=bolt_d/2+xy_tol,$fn=16); 
-    }
 }
 

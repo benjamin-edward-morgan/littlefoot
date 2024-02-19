@@ -1,15 +1,25 @@
 import TouchPad, { TouchPadState } from "./touchpad/TouchPad";
 import useIocWebsocketClient from './ioc/IocWebsocketClient';
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 
 
 export default function App() {
 
   const websocketUrl = "ws://" + window.location.host + "/ws";
+  const streamImageUrl = "http://" + window.location.host + "/stream";
 
-  // const websocketUrl = "ws://localhost:8080/ws";
+  // const websocketUrl = "ws://turdatron.local:8080/ws";
+  // const streamImageUrl = "http://turdatron.local:8080/stream";
+
+  // const websocketUrl = "ws://beefbox.local:8080/ws";
+  // const streamImageUrl = "http://beefbox.local:8080/stream";
+
 
   const [ioc, setter] = useIocWebsocketClient(websocketUrl);
+
+  const [lastPan, setLastPan] = useState(0.0);
+  const [lastTilt, setLastTilt] = useState(0.0);
+
 
   const panTiltCallback = useCallback( (panTilt: TouchPadState | null) => {
     let new_pan = panTilt ? panTilt.dx : 0.0;
@@ -20,15 +30,17 @@ export default function App() {
 
     //send update only if changed
     let update: {k: string, v: any}[] = [];
-    if(panInput && "Float" in panInput && panInput.Float.value != new_pan) {
+    if(panInput && "Float" in panInput && panInput.Float.value != new_pan && new_pan != lastPan) {
       update.push({k: "pan", v: new_pan }); 
+      setLastPan(new_pan);
     }
-    if(tiltInput && "Float" in tiltInput && tiltInput.Float.value != new_tilt) {
+    if(tiltInput && "Float" in tiltInput && tiltInput.Float.value != new_tilt && new_tilt != lastTilt) {
       update.push({ k: "tilt", v: new_tilt });
+      setLastTilt(new_tilt);
     }
    
     setter(update);
-  }, []);
+  }, [ioc, setter, lastPan, lastTilt]);
 
   const driveSteerCallback = useCallback( (driveSteer: TouchPadState | null) => {
     let new_lr = driveSteer ? driveSteer.dx : 0.0;
@@ -48,15 +60,15 @@ export default function App() {
    
     setter(update);
 
-  }, [setter, ioc]);
+  }, [ioc, setter]);
 
   return (
     <>
     <h3>littlefoot</h3>
 
-    <div className="video">
-      video goes here...
-    </div>
+    {/* <div className="video"> */}
+      <img src={streamImageUrl} className="stream"/>
+    {/* </div> */}
     <div className="touchpads">
       <TouchPad label="🛞" bg="white" callback={driveSteerCallback}/>
       <TouchPad label="🧿" bg="white" callback={panTiltCallback}/>

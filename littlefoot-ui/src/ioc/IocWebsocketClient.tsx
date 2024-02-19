@@ -177,7 +177,10 @@ export default function useIocWebsocketClient(url: string): [IocState, SetterFn]
                 console.warn("can't set nonexistant input " + k);
             }
         }
-        sendMessage(JSON.stringify(update));
+
+        if(Object.keys(update).length > 0) {
+            sendMessage(JSON.stringify(update));
+        }
     };
 
     useEffect(() => {
