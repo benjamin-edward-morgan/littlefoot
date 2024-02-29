@@ -11,11 +11,9 @@ interface SliderProps {
 
 export default function Slider(props: SliderProps) {
 
-
     let [value, setValue] = useState(props.input.value);
 
     useEffect(() => {
-        console.log("set: " + value)
         props.callback(value);
     }, [value])
 

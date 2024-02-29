@@ -65,4 +65,5 @@ div.touchpadlabel {
 img.stream {
   width: 100%;
   background-color: black;
+  display: inline-block;
 }
