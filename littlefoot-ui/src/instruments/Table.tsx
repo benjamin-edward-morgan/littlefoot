@@ -13,28 +13,24 @@ export function TableRow(props: { row: TableRowProp }) {
 
     return <tr>
         <td>
-            { props.row.name }
+            { props.row.name }:
         </td>
         <td>
-            { value} 
+            {value} 
         </td>
     </tr>
 }
 
 export default function Table(props: { title: String, rows: TableRowProp[] }) {
 
-    return <table>
-        <thead>
-            <tr>
-                <td>
-                    {props.title}
-                </td>
-            </tr>
-        </thead>
-        <tbody>
-            {props.rows.map(row => <TableRow row={row}/>)}
-        </tbody>
-    </table>
+    return <>
+        <b>{props.title}</b>
+        <table>
+            <tbody>
+                {props.rows.map(row => <TableRow row={row}/>)}
+            </tbody>
+        </table>
+    </>
 
 
 

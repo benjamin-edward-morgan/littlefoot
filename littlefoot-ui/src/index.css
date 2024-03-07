@@ -1,36 +1,100 @@
 html {
   margin: 0;
-  padding: 0;
   height: 100%;
+  padding: 0;
 }
 
 body {
+  font-family: sans-serif;
   margin: 0;
-  padding: 0;
   height: 100%;
-  min-height: 100%;
-  float: left;
-  width: 100%;
+  background-color: #f9f9f9;
+  color: #202020;
+  display: block;
 }
 
 div#root {
-  margin: 0;
-  padding: 0;
+  display: flex;
+  flex-direction: column;
   height: 100%;
 }
 
-h3 {
+header {
+  padding: 1em;
+  background-color: #202020;
+  color: #f9f9f9;
+}
+
+div.content {
+  min-height: 0;
+  flex: 1 1 auto;
+  padding: 1em;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  align-content: stretch;
+  gap: 1em;
+}
+
+footer {
+  padding: 1em;
+  background-color: #202020;
+  color: #f9f9f9;
+}
+
+div.sectionContent {
+  padding-left: 0.5em;
+  margin-bottom: 1em;
+  margin-top: 1em;
+}
+
+h1, h2, h3, h4, h5 {
   margin: 0;
-  padding: 0;
 }
 
 p {
   margin: 0;
 }
 
+div.panela{
+  display: flex;
+  flex: 3;
+  flex-direction: column;
+  height: 100%;
+}
+
+div.panelb{
+  display: flex;
+  flex-direction: column;
+  flex: 2;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+div.panel1 {
+  flex: 2;
+}
+
+div.panel2 {
+  flex: 1;
+}
+
+@media screen and (max-width: 1024px) {
+  div.panelb{
+    display: none;
+  }
+}
+
+
+
+
+
+
+
+
 div.video {
-  background-color: black;
-  color: white;
+  background-color: green;
   min-height: 75vw;
 }
 
@@ -64,6 +128,41 @@ div.touchpadlabel {
 
 img.stream {
   width: 100%;
-  background-color: black;
+  background-color: green;
   display: inline-block;
+}
+
+ 
+div.row {
+  display: flex;
+  justify-content: space-around;
+  flex-direction: row; 
+}
+
+div.col {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+div.col2 {
+  flex: 2;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+div.col3 {
+  flex: 3;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+input {
+  width: 85%;
 }
