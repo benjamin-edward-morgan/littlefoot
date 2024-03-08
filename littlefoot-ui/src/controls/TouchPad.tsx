@@ -67,7 +67,6 @@ class TouchHandler {
 
 interface TouchPadProps {
     label: string,
-    bg: string,
     callback: (move: TouchPadState | null) => void
 }
 
@@ -102,7 +101,7 @@ export default function TouchPad(props: TouchPadProps) {
         </>
     
     return <>
-        <div className="touchpad" style={{backgroundColor:props.bg}} >
+        <div className="touchpad" >
             {interior}
             <div className="touchpadlabelcontainer">
                 <div className="touchpadlabel" ref={touchpad}>

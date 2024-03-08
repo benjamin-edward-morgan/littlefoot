@@ -1,22 +1,22 @@
 html {
   margin: 0;
-  height: 100%;
   padding: 0;
+  height: 100%;
 }
 
 body {
   font-family: sans-serif;
   margin: 0;
-  height: 100%;
+  padding: 0;
   background-color: #f9f9f9;
   color: #202020;
-  display: block;
+  height: 100%;
 }
 
 div#root {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  height: 100%;
 }
 
 header {
@@ -25,27 +25,66 @@ header {
   color: #f9f9f9;
 }
 
-div.content {
-  min-height: 0;
-  flex: 1 1 auto;
-  padding: 1em;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: stretch;
-  align-content: stretch;
-  gap: 1em;
-}
-
 footer {
   padding: 1em;
   background-color: #202020;
   color: #f9f9f9;
 }
 
-div.sectionContent {
-  padding-left: 0.5em;
-  margin-bottom: 1em;
-  margin-top: 1em;
+div.content {
+  padding-top: 1em;
+  padding-inline: 1em;
+  padding-bottom: 0;
+  flex: 1;
+  display: flex;
+  height: 100%;
+  min-height: 0;
+}
+
+
+div.panela{
+  flex: 2;
+  height: 100%;
+}
+
+div.panelb{
+  flex: 1;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: scroll;
+
+}
+
+
+@media (orientation: portrait) {
+  div.panela{
+    flex: 0;
+  }
+
+  div.content{
+    flex-direction: column;
+  }
+}
+
+.contain{
+  height: 100%;
+  min-height: 0;
+}
+
+.flex-column {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+section {
+  padding-bottom: 2em;
+}
+
+section > div {
+  margin-top: 0.5em;
+  display: flex;
+  flex-direction: column;
 }
 
 h1, h2, h3, h4, h5 {
@@ -56,52 +95,32 @@ p {
   margin: 0;
 }
 
-div.panela{
-  display: flex;
-  flex: 3;
-  flex-direction: column;
-  height: 100%;
-}
 
-div.panelb{
-  display: flex;
-  flex-direction: column;
-  flex: 2;
-  height: 100%;
-  overflow-x: hidden;
-  overflow-y: scroll;
-}
 
-div.panel1 {
-  flex: 2;
-}
-
-div.panel2 {
-  flex: 1;
-}
 
 @media screen and (max-width: 1024px) {
-  div.panelb{
-    display: none;
+
+  header {
+    padding: 0.25em;
   }
+
+  div.content {
+    padding-top: 0.25em;
+    padding-inline: 0.25em;
+  }
+
+  footer {
+    padding: 0.25em;
+  }
+
 }
 
-
-
-
-
-
-
-
-div.video {
-  background-color: green;
-  min-height: 75vw;
-}
 
 div.touchpads {
   display: flex;
   justify-content: space-around;
   flex-direction: row; 
+  height: 100%;
 }
 
 div.touchpad {
@@ -127,12 +146,11 @@ div.touchpadlabel {
 }
 
 img.stream {
-  width: 100%;
-  background-color: green;
-  display: inline-block;
+  object-fit: contain;
+  max-height: 100%;
+  max-width: 100%;
 }
 
- 
 div.row {
   display: flex;
   justify-content: space-around;
@@ -165,4 +183,14 @@ div.col3 {
 
 input {
   width: 85%;
+}
+
+input[type=checkbox] { 
+  width: auto;
+}
+
+hr {
+  margin-inline: 0;
+  margin-block: 8;
+  border: 1;
 }
