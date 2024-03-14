@@ -13,17 +13,17 @@ interface OutputTableProps {
 
 function make_row(row: OutputTableRowProp, ioc: IocState) {
     let output = ioc.outputs[row.key];
-    let value = "?";
+    let value = "null";
 
-    if(output && "Float" in output) {
+    if(output && "Float" in output && output.Float.value != undefined) {
         value = output.Float.value.toString();
-    } else if(output && "Bool" in output) {
+    } else if(output && "Bool" in output && output.Bool.value != undefined) {
         if(output.Bool.value) {
             value = "✔︎ true"
         } else {
             value = "✗ false"
         }
-    } else if(output && "String" in output) {
+    } else if(output && "String" in output && output.String.value != undefined) {
         value = output.String.value
     }
     return <div className="row" key={row.key}>

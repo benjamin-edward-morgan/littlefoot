@@ -39,6 +39,7 @@ div.content {
   display: flex;
   height: 100%;
   min-height: 0;
+  gap: 1em;
 }
 
 

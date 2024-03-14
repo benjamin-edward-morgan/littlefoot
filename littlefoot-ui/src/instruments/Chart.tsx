@@ -125,7 +125,7 @@ class ChartInternalState {
             }
 
             for(var x of chartData) {
-                if(x.value) {
+                if(x.value != undefined) {
                     if(this.dataSeries[x.label]) {
                         let dataSeries = this.dataSeries[x.label];
                         let lastPoint = dataSeries[0];
@@ -160,12 +160,13 @@ class ChartInternalState {
             let xformed = this.dataSeries[k].map( pt => {
                 return {
                     x: (pt.x * 1000 + (this.timeOffset ? this.timeOffset : 0.0) - time)/1000,
-                    y: pt.y,
+                    y: pt.y ? pt.y : 0.0,
                 };
             });
             data[k] = xformed;
             
         }
+        //console.log(data);
         this.setData(data);
         this.animationFrameCancelToken = requestAnimationFrame(this.animationCallback);
     }
