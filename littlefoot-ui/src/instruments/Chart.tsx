@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { IocFloatOutput } from "../ioc/IocWebsocketClient"
 import "./Chart.css"
 import * as d3 from 'd3';
 import { useMeasure } from '@uidotdev/usehooks';
 
 export interface ChartData {
     label: string,
-    value: IocFloatOutput | undefined,
+    value: number | undefined,
     color: string,
 }
 
@@ -129,14 +128,14 @@ class ChartInternalState {
                     if(this.dataSeries[x.label]) {
                         let dataSeries = this.dataSeries[x.label];
                         let lastPoint = dataSeries[0];
-                        if(lastPoint.x != seconds && lastPoint.y != x.value.value) {
-                            dataSeries.unshift({x: seconds, y: x.value.value})
+                        if(lastPoint.x != seconds && lastPoint.y != x.value) {
+                            dataSeries.unshift({x: seconds, y: x.value})
                             while(dataSeries.length > 2 && dataSeries[dataSeries.length - 2].x * 1000 + this.timeOffset < now - 10000) {
                                 dataSeries.pop();    
                             }
                         }
                     } else {
-                        this.dataSeries[x.label] = [{x: seconds, y: x.value.value}]
+                        this.dataSeries[x.label] = [{x: seconds, y: x.value}]
                     }
                 }    
             }

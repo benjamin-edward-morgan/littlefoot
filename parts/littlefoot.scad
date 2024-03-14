@@ -1,4 +1,8 @@
 
+
+//apologies for this sloppy scad code. ~b
+
+
 //electronics enclosure 
 base_w = 80;
 base_l = 85;

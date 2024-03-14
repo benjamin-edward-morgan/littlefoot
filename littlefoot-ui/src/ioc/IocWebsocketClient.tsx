@@ -31,7 +31,11 @@ export interface IocStringOutput {
     value: string;
 }
 
-export type IocOutput = {Float: IocFloatOutput } | { Bool: IocBoolOutput } | { String: IocStringOutput };
+export interface IocArrayOutput {
+    value: any[];
+}
+
+export type IocOutput = {Float: IocFloatOutput } | { Bool: IocBoolOutput } | { String: IocStringOutput } | { Array: IocArrayOutput };
 
 export interface IocState {
     connected: boolean;
@@ -81,6 +85,8 @@ function assignOutput(current: IocOutput | undefined, update: IocOutput): IocOut
             new_output.Bool.value = update.Bool.value;
         } else if("String" in current && "String" in update) {
             new_output.String.value = update.String.value;
+        } else if ("Array" in current && "Array" in update) {
+            new_output.Array.value = update.Array.value;
         }
         return new_output;
     } else {
