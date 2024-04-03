@@ -15,6 +15,7 @@ export interface IocBoolInput {
 export interface IocStringInput {
     value: string;
     max_length: number;
+    choices: { [key: string]: string } | undefined;
 }
 
 export type IocInput = { Float: IocFloatInput } | { Bool: IocBoolInput } | { String: IocStringInput} ;

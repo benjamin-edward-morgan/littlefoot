@@ -16,8 +16,20 @@ export default function Settings(props: { ioc: IocState, setter: SetterFn }) {
                     key: "enable_camera",
                 },
                 {
+                    label: "Cam Resolution",
+                    key: "camera_resolution",
+                },
+                {
+                    label: "Cam Tuning File",
+                    key: "camera_tuning_file",
+                },
+                {
                     label: "Mjpeg Quality",
                     key: "mjpeg_quality",
+                },
+                {
+                    label: "Frame rate",
+                    key: "camera_framerate",
                 },
                 {
                     label: "Cam Pan - Trim",
