@@ -26,9 +26,9 @@ export default function ImuCharts(props: {ioc: IocState}) {
                         historySeconds={10} 
                         seconds={ioc.time?.seconds}
                         data={[
-                            {label: "x", value: accel ? (accel.value[0] as number) : undefined, color: "red"}, 
-                            {label: "y", value: accel ? (accel.value[1] as number) : undefined, color: "green"}, 
-                            {label: "z", value: accel ? (accel.value[2] as number) : undefined, color: "blue"}
+                            {label: "x", value: accel && accel.value ? (accel.value[0] as number) : undefined, color: "red"}, 
+                            {label: "y", value: accel && accel.value ? (accel.value[1] as number) : undefined, color: "green"}, 
+                            {label: "z", value: accel && accel.value ? (accel.value[2] as number) : undefined, color: "blue"}
                         ]}
                         params={{
                             ... DefaultChartParams,
@@ -44,9 +44,9 @@ export default function ImuCharts(props: {ioc: IocState}) {
                         historySeconds={10} 
                         seconds={ioc.time?.seconds}
                         data={[
-                            {label: "x", value: mag ? (mag.value[0] as number) : undefined, color: "red"}, 
-                            {label: "y", value: mag ? (mag.value[1] as number) : undefined, color: "green"}, 
-                            {label: "z", value: mag ? (mag.value[2] as number) : undefined, color: "blue"}
+                            {label: "x", value: mag && mag.value ? (mag.value[0] as number) : undefined, color: "red"}, 
+                            {label: "y", value: mag && mag.value  ? (mag.value[1] as number) : undefined, color: "green"}, 
+                            {label: "z", value: mag && mag.value  ? (mag.value[2] as number) : undefined, color: "blue"}
                         ]}
                         params = {{
                             ... DefaultChartParams,
@@ -62,9 +62,9 @@ export default function ImuCharts(props: {ioc: IocState}) {
                         historySeconds={10} 
                         seconds={ioc.time?.seconds}
                         data={[
-                            {label: "x", value: gyro ? (gyro.value[0] as number) : undefined, color: "red"}, 
-                            {label: "y", value: gyro ? (gyro.value[1] as number) : undefined, color: "green"}, 
-                            {label: "z", value: gyro ? (gyro.value[2] as number) : undefined, color: "blue"}
+                            {label: "x", value: gyro && gyro.value ? (gyro.value[0] as number) : undefined, color: "red"}, 
+                            {label: "y", value: gyro && gyro.value ? (gyro.value[1] as number) : undefined, color: "green"}, 
+                            {label: "z", value: gyro && gyro.value ? (gyro.value[2] as number) : undefined, color: "blue"}
                         ]}
                         params = {{
                             ... DefaultChartParams,
