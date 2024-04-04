@@ -146,6 +146,23 @@ div.touchpadlabel {
   font-size: 40pt;
 }
 
+div.key {
+  display: flex;
+  width: 2em;
+  height: 2em;
+  background-color: khaki;
+  margin: 4px;
+  border-width: 2px;
+  border-style: solid;
+  border-radius: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+div.key.down {
+  background-color: darkkhaki;
+}
+
 img.stream {
   object-fit: contain;
   max-height: 100%;
