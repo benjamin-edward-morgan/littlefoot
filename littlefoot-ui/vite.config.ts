@@ -9,11 +9,11 @@ export default defineConfig({
     host: true,
     proxy: {
       '/ws': {
-        target: 'ws://localhost:8080',
+        target: 'ws://beefbox.local:8080',
         ws: true,
       },
       '/stream': {
-        target: 'http://localhost:8080'
+        target: 'http://beefbox.local:8080'
       }
     }
   },

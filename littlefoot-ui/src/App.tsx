@@ -7,7 +7,6 @@ import Settings from "./panes/Settings";
 import OtherSensors from "./panes/OtherSensors";
 import LiveStream from "./panes/LiveStream";
 import DriveLookControls from "./panes/DriveLookControls";
-import KeyboardControls from './panes/KeyboardControls';
 
 export default function App() {
 
@@ -24,8 +23,7 @@ export default function App() {
           <LiveStream streamUrl={streamImageUrl} />
         </div>
         <div className="panelb">
-          {/* <DriveLookControls ioc={ioc} setter={setter}/> */}
-          <KeyboardControls ioc={ioc} setter={setter}/>
+          <DriveLookControls ioc={ioc} setter={setter}/>
           <ImuCharts ioc={ioc}/>
           <OtherSensors ioc={ioc}/>
           <LightControls ioc={ioc} setter={setter}/>

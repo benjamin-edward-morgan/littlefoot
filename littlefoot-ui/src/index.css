@@ -163,6 +163,23 @@ div.key.down {
   background-color: darkkhaki;
 }
 
+div.key.wide {
+  padding-inline: 0.5em;
+  width: unset;
+}
+
+div.key-row {
+  display: flex;
+  justify-content:center;
+  flex-direction: row; 
+}
+div.key-col {
+  display: flex;
+  justify-content:center;
+  flex-direction: column; 
+}
+
+
 img.stream {
   object-fit: contain;
   max-height: 100%;
