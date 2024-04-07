@@ -1,11 +1,11 @@
 # littlefoot
-This is a repo dedicated to documenting the modification of an old remote controlled car to include a Raspberry pi, a camera and some sensors that allow it to be teleoperated over a wifi connection. It serves as a testbed for [IOC](https://github.com/benjamin-edward-morgan/ioc), which I am developing as a more general purpose teleoperation software package. 
+This is a repo documenting the modification of an old remote controlled car to include a Raspberry pi, a camera and some sensors that allow it to be teleoperated over a wifi connection. It serves as a testbed for [IOC](https://github.com/benjamin-edward-morgan/ioc), which I am developing as a more general purpose teleoperation software package. 
 
 So they wouldn't go to waste, this project uses some discontinued parts that I just happened to have lying around. The 3d printed parts also are specific to this particular model of RC car and my modifications to it. As such, this should serve as more of an example to inform future designs, rather than something intended to be reproduced identically.
 
 ### Overview 
 - **[IOC](https://github.com/benjamin-edward-morgan/ioc)**
-The core application is implemented in Rust. It serves up the mjpeg stream, the websocket, and communicates with the i2c devices.
+The core application is implemented in Rust. It serves the mjpeg stream, the websocket, and communicates with the i2c devices.
 - **[config](config/README.md)**
 Contains the config files for IOC. The config file specifies what hardware is attached and how it is controlled. 
 - **[littlefoot-ui](littlefoot-ui/README.md)**
@@ -13,7 +13,19 @@ A UI implemented in React and TSX. It connects to the websocket and displays the
 - **[parts](parts/README.md)**
 Openscad design and `.stl` renders for 3d printed parts used in this build.
 
-| ![alt text](pics/PXL_20240304_231753781.jpg "Littlefoot") | ![alt text](pics/PXL_20240304_214950507.jpg "Littlefoot") |
+| Fully Assembled | Interface |
+| --- | --- |
+| ![alt text](pics/PXL_20240407_045524947.jpg "littlefoot assembled and running") | ![alt text](pics/desktop-screenshot.png "littlefoot-ui interface") |
+
+### Features 
+- Connection over local wifi connection to a web interface
+- Live video feed from the camera, in the form of an mjpeg stream
+- Camera can be panned and tilted about 180 degrees
+- Camera settings can be adjusted in real time
+- Accelerometer, Gyroscope and Magenetometer are charted in real time
+- Barometric pressure and temperature are displayed in real time (just threw that in there for fun since it was already included on the 10 DOF board)
+- Headlights and taillights are independently controllable and dimmable
+
 
 ### Parts list
 - 1x old ["New Bright" RC Jeep](https://www.newbright.com/products/rc-heavy-metal-jeep-wrangler/), with exising circuit board removed.
@@ -34,8 +46,10 @@ Openscad design and `.stl` renders for 3d printed parts used in this build.
 - 3d printed brackets for perf boards, pan/tilt mechanism.
 
 ### Learnings (so far...)
-- The RC car does not have great meanuverability. It has one or two distinct steering radii, and the smallest turning radius is still on the order of 1 meter. This is entirely due to New Bright's design of the steering linkage which limits the steering range.
-- The capacitor in parallel with the power supply to the L298N is necessary to protect the chip. Once the RC ran into a wall at full speed without the capacitor and half of the chip was fried. This was a real pain to replace.
-- The old Raspberry Pi V2 camera has a decent field of view, but the new wide angle v3 camera would be better.
-- You should take care to not push a servo beyond its limit. On another occasion the pan servo (which should only have a 180 degree range) was pushed too far in one direction. The servo unexpectely performed a full rotation, wrapping the ribbon cable around the camera and tilt mechanism until the servo and camera were unplugged. 
+- The RC car does not have great meanuverability. It has two discrete steering radii, rathern than a continuous range. The smallest turning radius is still on the order of 1 meter. This is entirely due to New Bright's design of the steering linkage which limits the steering range.
+- The capacitor in parallel with the power supply to the L298N is necessary to protect the chip. Once, it ran into a wall at full speed without the capacitor and half of the chip was fried. It was a real pain to replace.
+- The old Raspberry Pi V2 camera has a decent field of view, but the new wide angle v3 camera should be better.
+- You should take care to not push a servo beyond its limit. On another occasion the pan servo (which should only have a 180 degree range) was pushed too far in one direction. The servo unexpectely performed a full rotation, wrapping the ribbon cable around the camera and tilt mechanism until the servo and camera were unplugged. This unfortunately damaged the ribbon cable and connector on the Raspberry Pi.  
 - Would be nice to sense the battery voltage. The only way to get a battery reading is to view the indicator on the physical car. 
+- The DC motors for drive and steer do create noticible noise in the magnetometer readings.
+- Internal temperature sensor rises about 10 degrees C above ambient when the car is running, due to the heat generated by the Raspberry Pi.
