@@ -167,16 +167,20 @@ function keyboardReducer(state: KeyboardControlState, evt: KeyboardEvent) {
           }
       case "ArrowUp":
           evt.preventDefault();
-          return { ...state, tiltUpKeyDown: isKeyDown, tilt: state.tilt + (isKeyDown ? -ptSpeed : 0) };
+          var newTilt = Math.max(Math.min(state.tilt + (isKeyDown ? -ptSpeed : 0), 1.0), -1.0);
+          return { ...state, tiltUpKeyDown: isKeyDown, tilt: newTilt };
       case "ArrowDown":
           evt.preventDefault();
-          return { ...state, tiltDownKeyDown: isKeyDown, tilt: state.tilt + (isKeyDown ? ptSpeed : 0) };
+          var newTilt = Math.max(Math.min(state.tilt + (isKeyDown ? ptSpeed : 0), 1.0), -1.0);
+          return { ...state, tiltDownKeyDown: isKeyDown, tilt: newTilt };
       case "ArrowLeft":
           evt.preventDefault();
-          return { ...state, panLeftKeyDown: isKeyDown, pan: state.pan + (isKeyDown ? ptSpeed : 0) };
+          var newPan = Math.max(Math.min(state.pan + (isKeyDown ? ptSpeed : 0), 1.0), -1.0);
+          return { ...state, panLeftKeyDown: isKeyDown, pan: newPan };
       case "ArrowRight":
           evt.preventDefault();
-          return { ...state, panRightKeyDown: isKeyDown, pan: state.pan + (isKeyDown ? -ptSpeed : 0) };
+          var newPan = Math.max(Math.min(state.pan + (isKeyDown ? -ptSpeed : 0), 1.0), -1.0);
+          return { ...state, panRightKeyDown: isKeyDown, pan: newPan };
       default:
           return state;
   }
