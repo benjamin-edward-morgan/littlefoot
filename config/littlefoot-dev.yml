@@ -1,0 +1,154 @@
+metadata:
+  name: littlefoot - dev 
+  description: same interface as littlefoot, but for local development
+
+# modules expose inputs and outputs from various sources
+modules:
+  local_server: 
+    Server:
+      port: 8080
+      root_context: /
+      inputs:
+        drive:
+          Float: { start: 0.0, min: -1, max: 1, step: 0.0009765625 }
+        steer:
+          Float: { start: 0.0, min: -1, max: 1, step: 0.0009765625 }
+        pan: 
+          Float: { start: 0, min: -1, max: 1, step: 0.0009765625 }
+        pan_trim: 
+          Float: { start: 0.0625, min: -1, max: 1, step: 0.0009765625 }
+        tilt: 
+          Float: { start: 0, min: -1, max: 1, step: 0.0009765625 }
+        tilt_trim: 
+          Float: { start: 0.7138671875, min: -1, max: 1, step: 0.0009765625 }
+        headlights:
+          Float: { start: 0.0, min: 0, max: 1, step: 0.1 }
+        taillights:
+          Float: { start: 0.0, min: 0, max: 1, step: 0.1 }
+        enable_camera:
+          Bool: { start: false }
+        mjpeg_quality:
+          Float: { start: 50, min: 0, max: 100, step: 1 }
+        camera_framerate:
+          Float: { start: 5, min: 1, max: 60, step: 1 }
+        camera_resolution:
+          String: 
+            start: "640x480"
+            max_length: 12
+            choices: 
+              "320x240": "320x240"
+              "640x480": "640x480"
+              "1280x720": "1280x720"
+              "1920x1080": "1920x1080"
+        camera_tuning_file:
+          String:
+            start: ""
+            max_length: 1024
+            choices:
+              "none": ""
+              "RpiCameraV2": "/usr/share/libcamera/ipa/rpi/vc4/imx219.json"
+              "RpiCameraV2 - NoIR": "/usr/share/libcamera/ipa/rpi/vc4/imx219_noir.json"
+              "Uncalibrated": "/usr/share/libcamera/ipa/rpi/vc4/uncalibrated.json"
+      outputs:
+        gyroscope: Array
+        magnetometer: Array
+        accelerometer: Array
+        temperature: Float 
+        pressure: Float 
+        pan_dev: Float 
+        tilt_dev: Float
+        drive_fwd_dev: Float
+        drive_rev_dev: Float
+        drive_enable_dev: Float
+        steer_left_dev: Float
+        steer_right_dev: Float
+        steer_enable_dev: Float
+        headlights_dev: Float
+        taillights_dev: Float
+        jpeg_frames: Binary
+      endpoints: 
+        "/": 
+          Static:
+            directory: "assets"
+        "/ws":
+          WebSocket: 
+            inputs: [ 
+              pan, tilt, pan_trim, tilt_trim, 
+              drive, steer, 
+              headlights, taillights, 
+              enable_camera, mjpeg_quality, camera_framerate, camera_resolution, camera_tuning_file
+            ]
+            outputs: [ 
+              gyroscope, magnetometer, accelerometer, 
+              temperature, pressure, heading 
+            ]
+        "/debug":
+          WebSocket:
+            inputs: [ ]
+            outputs: [ 
+              pan_dev, tilt_dev, 
+              drive_fwd_dev, drive_rev_dev, drive_enable_dev, 
+              steer_left_dev, steer_right_dev, steer_enable_dev, 
+              headlights_dev, taillights_dev 
+            ]
+        "/stream":
+          Mjpeg:
+            output: jpeg_frames
+  camera:
+    RaspiCam: {}
+
+# transformers read from one or more inputs and produce one or more new inputs
+transformers:
+  pan_sum:
+    Sum:
+      inputs:
+        - local_server.pan
+        - local_server.pan_trim
+  
+  tilt_sum:
+    Sum:
+      inputs:
+        - local_server.tilt
+        - local_server.tilt_trim
+
+  tilt_servo: 
+    LinearTransform:
+      input: tilt_sum.value 
+      from: [-1, 1]
+      to: [0.05, 0.15]
+  
+  pan_servo: 
+    LinearTransform:
+      input: pan_sum.value
+      from: [-1, 1]
+      to: [0.05, 0.15]
+
+  drive_hbridge:
+    HBridge:
+      input: local_server.drive 
+  
+  steer_hbridge:
+    HBridge:
+      input: local_server.steer
+
+# pipes read from inputs and write to outputs
+pipes:
+  - { from: pan_servo.value, to: local_server.pan_dev }
+  - { from: tilt_servo.value, to: local_server.tilt_dev }
+
+  - { from: drive_hbridge.forward, to: local_server.drive_fwd_dev }
+  - { from: drive_hbridge.reverse, to: local_server.drive_rev_dev }
+  - { from: drive_hbridge.enable, to: local_server.drive_enable_dev }
+  - { from: steer_hbridge.forward, to: local_server.steer_left_dev }
+  - { from: steer_hbridge.reverse, to: local_server.steer_right_dev }
+  - { from: steer_hbridge.enable, to: local_server.steer_enable_dev }
+
+  - { from: local_server.headlights, to: local_server.headlights_dev }
+  - { from: local_server.taillights, to: local_server.taillights_dev }
+
+  - { from: camera.mjpeg, to: local_server.jpeg_frames }
+  - { from: local_server.enable_camera, to: camera.enable }
+  - { from: local_server.mjpeg_quality, to: camera.quality }
+  - { from: local_server.camera_framerate, to: camera.framerate }
+  - { from: local_server.camera_resolution, to: camera.resolution }
+  - { from: local_server.camera_tuning_file, to: camera.tuning_file }

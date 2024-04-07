@@ -1,0 +1,204 @@
+metadata:
+  name: littlefoot
+  description: just a remote controlled car powered by raspberry pi
+
+# modules expose inputs and outputs from various sources
+modules:
+# server that exposes websocket endpoint, mjpeg stream, and static files
+  local_server: 
+    Server:
+      port: 8080
+      root_context: /
+      inputs:
+        drive:
+          Float: { start: 0.0, min: -1, max: 1, step: 0.0009765625 }
+        steer:
+          Float: { start: 0.0, min: -1, max: 1, step: 0.0009765625 }
+        pan: 
+          Float: { start: 0, min: -1, max: 1, step: 0.0009765625 }
+        pan_trim: 
+          Float: { start: 0.0400390625, min: -1, max: 1, step: 0.0009765625 }
+        tilt: 
+          Float: { start: 0, min: -1, max: 1, step: 0.0009765625 }
+        tilt_trim: 
+          Float: { start: 0.7587890625, min: -1, max: 1, step: 0.0009765625 }
+        headlights:
+          Float: { start: 0.5, min: 0, max: 1, step: 0.1 }
+        taillights:
+          Float: { start: 0.0, min: 0, max: 1, step: 0.1 }
+        enable_camera:
+          Bool: { start: true }
+        mjpeg_quality:
+          Float: { start: 75, min: 0, max: 100, step: 1 }
+        camera_framerate:
+          Float: { start: 10, min: 1, max: 60, step: 1 }
+        camera_resolution:
+          String: 
+            start: "320x240"
+            max_length: 12
+            choices: 
+              "320x240": "320x240"
+              "640x480": "640x480"
+              "1280x720": "1280x720"
+              "1920x1080": "1920x1080"
+        camera_tuning_file:
+          String:
+            start: "/usr/share/libcamera/ipa/rpi/vc4/imx219_noir.json"
+            max_length: 1024
+            choices:
+              "none": ""
+              "RpiCameraV2": "/usr/share/libcamera/ipa/rpi/vc4/imx219.json"
+              "RpiCameraV2 - NoIR": "/usr/share/libcamera/ipa/rpi/vc4/imx219_noir.json"
+              "Uncalibrated": "/usr/share/libcamera/ipa/rpi/vc4/uncalibrated.json"
+      outputs:
+        gyroscope: Array
+        magnetometer: Array
+        accelerometer: Array
+        temperature: Float 
+        pressure: Float 
+        jpeg_frames: Binary
+      endpoints: 
+        "/": 
+          Static:
+            directory: "assets"
+        "/ws":
+          WebSocket: 
+            inputs: [ 
+              pan, tilt, pan_trim, tilt_trim, 
+              drive, steer, 
+              headlights, taillights, 
+              enable_camera, mjpeg_quality, camera_framerate, camera_resolution, camera_tuning_file
+            ]
+            outputs: [ 
+              gyroscope, magnetometer, accelerometer, 
+              temperature, pressure
+            ]
+        "/stream":
+          Mjpeg:
+            output: jpeg_frames
+
+  # pwm signals used to drive various hardware components
+  pwm:
+    Pca9685:
+      i2c_bus: 0
+      i2c_address: 0x40
+      channels:
+        pan_servo: 0
+        tilt_servo: 1
+        headlights: 2
+        taillights: 3
+        drive_enable: 4
+        drive_rev: 5
+        drive_fwd: 6
+        steer_enable: 7
+        steer_left: 8
+        steer_right: 9
+
+  # a camera
+  camera:
+    RaspiCam: {}
+
+  # atmospheric pressure and temperature sensor
+  press_temp:
+    Bmp180:
+      pressure_precision: Standard
+      period_ms: 1000
+
+  # mems gyroscope sensor
+  gyro:
+    L3dg20:
+      i2c_address: 0x6B
+  
+  # combined magnetometer and accelerometer sensor
+  mag_accel:
+    Lsm303dlhc: {}
+
+# transformers read from one or more inputs and produce one or more new inputs
+transformers:
+
+  # adds pan/tilt with respective trim values 
+  pan_sum:
+    Sum:
+      inputs:
+        - local_server.pan
+        - local_server.pan_trim
+  
+  tilt_sum:
+    Sum:
+      inputs:
+        - local_server.tilt
+        - local_server.tilt_trim
+
+  tilt_clamp:
+    Clamp:
+      input: tilt_sum.value
+      min: -1
+      max: 1
+
+  pan_clamp:
+    Clamp:
+      input: pan_sum.value
+      min: -1
+      max: 1
+
+  # transforms pan/tilt values to values compatible with servos 
+  # assuming 60hz, 0.05 and 0.15 duty cycle are roughly 0 and 180 degrees
+  tilt_servo: 
+    LinearTransform:
+      input: tilt_clamp.value 
+      from: [-1, 1]
+      to: [0.05, 0.12]
+  
+  pan_servo: 
+    LinearTransform:
+      input: pan_clamp.value
+      from: [-1, 1]
+      to: [0.05, 0.15]
+
+  # hbridges rectify drive and steer values and create "enabled" signals 
+  # when the input is nonzero. This is becuase electrically, there are 
+  # hbridges controlling a reversible DC current throug the drive and steer motors.
+  drive_hbridge:
+    HBridge:
+      input: local_server.drive 
+  
+  steer_hbridge:
+    HBridge:
+      input: local_server.steer
+
+# pipes read from inputs and write to outputs
+pipes:
+# camera pan/tilt
+  - { from: pan_servo.value, to: pwm.pan_servo }
+  - { from: tilt_servo.value, to: pwm.tilt_servo }
+
+# drive and steer controls
+  - { from: drive_hbridge.forward, to: pwm.drive_fwd }
+  - { from: drive_hbridge.reverse, to: pwm.drive_rev }
+  - { from: drive_hbridge.enable, to: pwm.drive_enable }
+  - { from: steer_hbridge.forward, to: pwm.steer_left}
+  - { from: steer_hbridge.reverse, to: pwm.steer_right }
+  - { from: steer_hbridge.enable, to: pwm.steer_enable }
+
+# lights
+  - { from: local_server.headlights, to: pwm.headlights }
+  - { from: local_server.taillights, to: pwm.taillights }
+
+# camera controls
+  - { from: local_server.enable_camera, to: camera.enable }
+  - { from: local_server.mjpeg_quality, to: camera.quality }
+  - { from: local_server.camera_framerate, to: camera.framerate }
+  - { from: local_server.camera_resolution, to: camera.resolution }
+  - { from: local_server.camera_tuning_file, to: camera.tuning_file }
+
+# mjpeg stream
+  - { from: camera.mjpeg, to: local_server.jpeg_frames }
+
+# other sensors
+  - { from: press_temp.temperature_c, to: local_server.temperature }
+  - { from: press_temp.pressure_h_pa, to: local_server.pressure }
+
+# imu sensors
+  - { from: gyro.value, to: local_server.gyroscope }
+  - { from: mag_accel.magnetometer, to: local_server.magnetometer }
+  - { from: mag_accel.accelerometer, to: local_server.accelerometer }
